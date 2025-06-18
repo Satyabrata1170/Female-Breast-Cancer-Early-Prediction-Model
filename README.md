@@ -56,7 +56,7 @@ This dataset holds immense potential for advancing medical research, aiding in t
 - Trained on: 9,685 images
 
 
-## Quotes Added
+## Some Quotes 
 
 > _"Early detection is the best protection."_  
 > _"Hope is stronger than fear."_  
@@ -65,7 +65,7 @@ This dataset holds immense potential for advancing medical research, aiding in t
 
 ##  Acknowledgements
 
-- Dataset: Mammogram Mastery Dataset (Sulaymaniyah, Iraq)
+- Dataset: Mammogram Mastery Dataset
 - TensorFlow/Keras
 - Flask Web Framework
 
