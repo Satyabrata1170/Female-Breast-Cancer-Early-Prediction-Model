@@ -35,7 +35,7 @@ BREAST_CANCER_PREDICTION/
 
 ---
 
-## 📚 Dataset Description
+##  Dataset Description
 
 **Mammogram Mastery: A Robust Dataset for Breast Cancer Detection and Medical Education**
 
