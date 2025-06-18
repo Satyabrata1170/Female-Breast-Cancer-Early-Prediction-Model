@@ -5,7 +5,7 @@ This project is an AI-powered web application for detecting breast cancer using 
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 BREAST_CANCER_PREDICTION/
@@ -22,7 +22,7 @@ BREAST_CANCER_PREDICTION/
 
 ---
 
-## 🚀 Features
+##  Features
 
 - Two prediction modes:
   - 📤 **Upload Mode**: Upload an image from your computer
@@ -47,7 +47,7 @@ This dataset holds immense potential for advancing medical research, aiding in t
 
 ---
 
-## 🧠 Model Details
+## Model Details
 
 - Framework: TensorFlow / Keras
 - Model Type: Convolutional Neural Network (CNN)
@@ -56,14 +56,14 @@ This dataset holds immense potential for advancing medical research, aiding in t
 - Trained on: 9,685 images
 
 
-## 🗣️ Quotes Added
+## Quotes Added
 
 > _"Early detection is the best protection."_  
 > _"Hope is stronger than fear."_  
 
 ---
 
-## 🤝 Acknowledgements
+##  Acknowledgements
 
 - Dataset: Mammogram Mastery Dataset (Sulaymaniyah, Iraq)
 - TensorFlow/Keras
@@ -71,7 +71,7 @@ This dataset holds immense potential for advancing medical research, aiding in t
 
 ---
 
-## 📬 Contact
+##  Contact
 
 For queries or suggestions: **satyabratabrahmachary1610@gmail.com**
 
