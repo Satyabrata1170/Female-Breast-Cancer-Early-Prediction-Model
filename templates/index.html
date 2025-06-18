@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Breast Cancer Prediction</title>
+  <!-- Bootstrap CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Icon Font (FontAwesome) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- <link rel="stylesheet" href="style.css"> -->
+</head>
+<style>
+  :root {
+  --pink: #e75480;
+  --pink-dark: #b92d5a;
+  --nav-gradient: linear-gradient(90deg, #fff0f6, #ffe0ec 55%, #e75480 100%);
+  --bg-gradient: linear-gradient(135deg, #fff0f6 0%, #ffe0ec 100%);
+  --glass-bg: rgba(255,255,255,0.85);
+  --shadow-3d: 0 8px 32px 0 rgba(231,84,128,0.14), 0 1.5px 4px #fee4f0 inset;
+  --navbar-3d: 0 6px 20px -2px rgba(231, 84, 128, 0.14), 0 2px 8px #fee4f0 inset;
+  --section-padding: 64px 0;
+  --footer-bg: #181823;
+  --footer-color: #fff;
+  --font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
+  --skyblue: #000000;
+  --skyblue-hover: #005eff;
+}
+
+/* General Styles */
+body {
+  font-family: var(--font-family);
+  background: var(--bg-gradient);
+  color: #2c2c2c;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: var(--pink);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover, .nav-link:hover, .footer-link:hover {
+  color: var(--pink-dark);
+}
+
+.text-pink { color: var(--pink) !important; }
+.bg-pink { background: var(--pink) !important; }
+
+.btn-pink {
+  background: linear-gradient(90deg, #4484fc 60%, #ff021b 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(231, 84, 128, 0.22), 0 1.5px 4px #fee4f0 inset;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1.18rem;
+  padding: 0.75em 2em;
+  transition: background 0.29s, transform 0.19s, box-shadow 0.21s;
+  position: relative;
+  overflow: hidden;
+}
+.btn-pink::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, rgba(38, 0, 255, 0.133), transparent 80%);
+  transform: translate(-50%,-50%) scale(0.7);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.btn-pink:hover {
+  background: linear-gradient(90deg, #b6bdff 0%, #3700ff 100%);
+  color: #000000;
+  transform: translateY(-2.5px) scale(1.035);
+  box-shadow: 0 16px 36px rgba(231, 84, 128, 0.22), 0 2px 8px #fee4f0 inset;
+}
+.btn-pink:hover::after {
+  opacity: 0.4;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+.section-home, .section-upload, .section-camera {
+  min-height: 100vh;
+  padding: var(--section-padding);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+.section-upload, .section-camera {
+  background: linear-gradient(135deg, #fff2ff 85%, #ff0263 100%);
+  border-radius: 32px 32px 0 0;
+  margin-top: -40px;
+  box-shadow: 0 8px 40px 0 rgba(231,84,128,0.08);
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(28px) scale(.97);
+  animation: fadeInMove .9s forwards;
+}
+@keyframes fadeInMove {
+  to { opacity: 1; transform: none; }
+}
+.section-home .fade-in { animation-delay: 0.12s; }
+.section-upload .fade-in, .section-camera .fade-in { animation-delay: 0.18s; }
+
+.img-preview {
+  max-width: 350px;
+  max-height: 240px;
+  object-fit: contain;
+  border: 3px solid var(--pink);
+  box-shadow: 0 8px 24px rgba(231, 84, 128, 0.10), 0 2px 8px #c0b6ff inset;
+  background: #f9f9f9;
+  transition: box-shadow .2s, transform .18s;
+}
+.img-preview:hover {
+  box-shadow: 0 16px 52px rgba(231, 84, 128, 0.18), 0 2px 8px #ffb6c1 inset;
+  transform: scale(1.035) rotate(-1deg);
+}
+
+.upload-card, .camera-card {
+  border: none;
+  border-radius: 26px;
+  background: var(--glass-bg);
+  box-shadow: 0 8px 32px 0 rgba(231,84,128,0.14), 0 1.5px 4px #fee4f0 inset;
+  transition: transform 0.18s, box-shadow 0.22s;
+  backdrop-filter: blur(4px);
+  position: relative;
+  overflow: hidden;
+}
+.upload-card:hover, .camera-card:hover {
+  transform: translateY(-7px) scale(1.018);
+  box-shadow: 0 24px 72px 2px rgba(231, 84, 128, 0.16), 0 2px 8px #fee4f0 inset;
+}
+
+#uploadPreview, #cameraPreview {
+  text-align: center;
+  transition: opacity 0.5s;
+}
+.predict-value {
+  margin-top: 10px;
+  background: linear-gradient(90deg, #e75480 60%, #ffb6c1 100%);
+  color: #fff;
+  border-radius: 14px;
+  padding: 9px 24px;
+  display: inline-block;
+  box-shadow: 0 2px 14px rgba(231, 84, 128, 0.20);
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
+  animation: bounceIn 1.1s;
+}
+@keyframes bounceIn {
+  0% { transform: scale(.8) translateY(40px); opacity: .2;}
+  60% { transform: scale(1.13) translateY(-6px);}
+  100% { transform: scale(1) translateY(0); opacity: 1;}
+}
+
+/* NAVBAR CHANGES FOR SKYBLUE, LOGO ONLY ON MOBILE, BURGER RIGHT */
+.navbar {
+  box-shadow: var(--navbar-3d);
+  background: var(--skyblue);
+  border-radius: 0 0 32px 32px;
+  animation: navGlow 7s infinite linear alternate;
+  transition: background 0.3s;
+}
+@keyframes navGlow {
+  to {filter: drop-shadow(0 0 18px #eafc74);}
+}
+
+.navbar-brand {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.65rem;
+  letter-spacing: 1.6px;
+  background: linear-gradient(90deg, var(--pink), var(--pink-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 6px #ffe0ec88;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  transition: opacity 0.3s;
+}
+
+.navbar .fa-ribbon {
+  font-size: 1.5rem;
+  color: var(--pink);
+}
+
+/* Hide "Breast Cancer Predictor" text and only show logo on mobile */
+@media (max-width: 576px) {
+  .navbar-brand .logo-text {
+    display: none;
+  }
+  .navbar-brand .fa-ribbon {
+    font-size: 1.7rem;
+  }
+}
+
+/* Adjust navbar layout: logo left, burger right */
+.navbar .container {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-toggler {
+  border-radius: 11px;
+  border: 2px solid #fff;
+  background: #fff0f6;
+  margin-left: auto;
+  order: 2;
+  transition: background .2s, border-color .2s;
+}
+.navbar-toggler:focus {
+  background: #ffd6e6;
+  border-color: var(--skyblue-hover);
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3e%3cpath stroke='rgba(34,139,230,0.8)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  transition: filter 0.2s;
+}
+.navbar-toggler:hover .navbar-toggler-icon {
+  filter: drop-shadow(0 0 4px var(--skyblue-hover));
+}
+
+/* Navbar link hover effect skyblue on desktop */
+.nav3d {
+  position: relative;
+  padding: 0.6em 1.2em;
+  margin: 0 0.25em;
+  border-radius: 10px;
+  background: transparent;
+  font-weight: 600;
+  color: #fff !important;
+  overflow: hidden;
+  transition: background 0.2s, box-shadow 0.2s, color 0.19s, transform 0.19s;
+}
+.nav3d::before {
+  content: "";
+  position: absolute; left: 14px; right: 14px; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #228be6 30%, #74c0fc 100%);
+  border-radius: 8px 8px 0 0;
+  transform: scaleX(0);
+  transition: transform 0.23s cubic-bezier(.62,.02,.52,.98);
+}
+.nav3d:hover, .nav3d.active {
+  background: linear-gradient(90deg, #74c0fc 0%, #228be6 100%);
+  color: #fff !important;
+  transform: translateY(-2px) scale(1.07) perspective(100px) rotateX(6deg);
+  box-shadow: 0 10px 32px rgba(34, 139, 230, 0.11), 0 2px 8px #e3f7ff inset;
+  text-shadow: 0 2px 7px #e3f7ff;
+}
+.nav3d:hover::before,
+.nav3d.active::before {
+  transform: scaleX(1);
+}
+
+/* Offcanvas menu background skyblue on mobile */
+.offcanvas.offcanvas-start.bg-dark {
+  background: var(--skyblue) !important;
+}
+.offcanvas-title.text-white {
+  color: #fff !important;
+}
+.offcanvas .nav-link {
+  color: #fff;
+  font-weight: 600;
+}
+.offcanvas .nav-link:hover {
+  background: #228be6;
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* Section Headings */
+h1, h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+h2 { color: var(--pink); }
+
+.section-home {
+  background: linear-gradient(120deg, #ffe0ec 60%, #fff0f6 100%);
+  box-shadow: 0 2px 40px 0 #ffd6e688;
+}
+.section-home .display-4 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  color: var(--pink-dark);
+  background: linear-gradient(90deg, #e75480, #b92d5a 85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 3px 14px #ffe0ec88;
+}
+
+.lead {
+  font-size: 1.35rem;
+  color: #7b3e57;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+/* Video Popup Button */
+.btn-video {
+  font-weight: 600;
+  border-radius: 25px;
+  padding: 0.5em 2em;
+  background: rgba(231,84,128,0.12);
+  color: var(--pink);
+  border: 2px solid var(--pink);
+  font-size: 1.1rem;
+  transition: background 0.2s, color 0.2s, box-shadow 0.18s;
+  box-shadow: 0 4px 18px 0 #ffe0ec55;
+}
+.btn-video:hover {
+  background: var(--pink);
+  color: #fff;
+  box-shadow: 0 8px 32px 0 #ffb6c1aa;
+}
+
+input[type="file"].form-control {
+  padding: 0.45em;
+  border-radius: 10px;
+  border: 2px solid #ffe0ec;
+  background: #fff0f6;
+  transition: border-color 0.19s;
+}
+input[type="file"].form-control:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 6px #e75480aa;
+}
+
+.footer-section {
+  background: var(--footer-bg);
+  color: var(--footer-color);
+  border-radius: 32px 32px 0 0;
+  margin-top: 36px;
+  padding-bottom: 2.5em;
+}
+.footer-section h2 { color: #fff; font-size: 2.1rem; font-weight: 800; }
+.footer-section .fa {
+  margin-bottom: 0.3em;
+  color: var(--pink);
+  transition: color 0.18s, transform 0.22s;
+  filter: drop-shadow(0 2px 6px #ffe0ec88);
+}
+.footer-section .col-md-3:hover .fa {
+  color: #fff;
+  transform: scale(1.22) rotate(-8deg);
+}
+.footer-section .col-md-3:hover div {
+  color: #ffb6c1;
+}
+.footer-section .col-md-3 {
+  border-radius: 14px;
+  padding: 1.1em 0.6em 0.3em;
+  transition: background 0.19s, box-shadow 0.18s;
+  background: transparent;
+}
+.footer-section .col-md-3:hover {
+  background: #2a2a3a;
+  box-shadow: 0 4px 18px #e7548011;
+}
+
+.footer-link {
+  color: var(--pink);
+  transition: color 0.2s;
+  font-weight: 600;
+  font-size: 1.07rem;
+}
+.footer-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+.footer-bottom {
+  font-size: 1.09rem;
+}
+hr.my-4 {
+  border-top: 2px solid #ffb6c1;
+  opacity: 0.5;
+}
+
+@media (max-width: 991px) {
+  .navbar { border-radius: 0; }
+  .footer-section { border-radius: 24px 24px 0 0; }
+}
+@media (max-width: 767px) {
+  .section-home, .section-upload, .section-camera {
+    padding: 32px 0;
+    min-height: 92vh;
+  }
+  .upload-card, .camera-card {
+    padding: 1.3rem;
+    margin: 0 0.4rem;
+  }
+  .img-preview {
+    max-width: 100%;
+    max-height: 190px;
+  }
+  .footer-section .col-md-3 {
+    margin-bottom: 0.9em;
+    min-width: 46vw;
+  }
+}
+@media (max-width: 480px) {
+  .section-home .display-4 { font-size: 2.1rem; }
+  .footer-section h2 { font-size: 1.33rem; }
+  .footer-section .col-md-3 { min-width: 90vw; }
+}
+</style>
+<body>
+  <!-- 3D Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark shadow-3d sticky-top">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="fas fa-ribbon me-2 text-pink"></i>
+        <span class="logo-text">Breast Cancer Predictor</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-label="Open menu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link nav3d" href="#home">Home</a></li>
+          <li class="nav-item"><a class="nav-link nav3d" href="#upload">Upload</a></li>
+          <li class="nav-item"><a class="nav-link nav3d" href="#camera">Camera</a></li>
+          <li class="nav-item"><a class="nav-link nav3d" href="#features">Features</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Offcanvas Mobile Menu -->
+  <div class="offcanvas offcanvas-start bg-dark" id="mobileMenu">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title text-white">Menu</h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link nav3d" href="#home" data-bs-dismiss="offcanvas">Home</a></li>
+        <li class="nav-item"><a class="nav-link nav3d" href="#upload" data-bs-dismiss="offcanvas">Upload</a></li>
+        <li class="nav-item"><a class="nav-link nav3d" href="#camera" data-bs-dismiss="offcanvas">Camera</a></li>
+        <li class="nav-item"><a class="nav-link nav3d" href="#features" data-bs-dismiss="offcanvas">Features</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Home Section -->
+  <section id="home" class="section-home d-flex align-items-center flex-column justify-content-center text-center">
+    <div>
+      <h1 class="display-4 mb-3 fade-in">Breast Cancer Prediction</h1>
+      <p class="lead fade-in">Empowering early detection using advanced artificial intelligence.<br>
+        Upload or capture an image for instant prediction.
+      </p>
+      <a href="#upload" class="btn btn-pink btn-lg mt-3 shadow-lg fade-in">Get Started <i class="fas fa-arrow-down"></i></a>
+      <div class="video-popup mt-4 fade-in">
+        <a href="https://www.youtube.com/watch?v=jeELLC2L65k" target="_blank" class="btn btn-outline-light btn-video"><i class="fas fa-play"></i> Self-Exam Guide</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upload from Computer Section -->
+  <section id="upload" class="section-upload d-flex align-items-center flex-column justify-content-center text-center">
+    <div class="container">
+      <h2 class="mb-4 fade-in">Upload Image from Computer</h2>
+      <div class="card upload-card mx-auto p-4 shadow-lg fade-in">
+        <form id="uploadForm">
+          <label for="fileInput" class="form-label">Choose a breast X-ray or scan image</label>
+          <input type="file" class="form-control mb-3" id="fileInput" accept="image/*" required>
+          <button type="submit" class="btn btn-pink mt-2">Predict <i class="fas fa-magic"></i></button>
+        </form>
+        <div id="uploadPreview" class="mt-4 d-none fade-in">
+          <img id="uploadedImage" class="img-fluid rounded shadow-lg mb-2 img-preview" alt="Uploaded">
+          <div id="uploadResult" class="predict-value"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upload from Camera Section -->
+  <!-- Replace the Camera Section in your existing index.html with this -->
+<section id="camera" class="section-camera d-flex align-items-center flex-column justify-content-center text-center">
+  <div class="container">
+    <h2 class="mb-4 fade-in">Capture Image from Camera</h2>
+    <div class="card camera-card mx-auto p-4 shadow-lg fade-in">
+      <div id="cameraArea">
+        <video id="video" width="320" height="240" autoplay class="mb-3 rounded img-preview d-none"></video>
+        <div class="d-flex justify-content-center gap-2">
+          <button id="startCamera" class="btn btn-outline-primary mb-2">Start <i class="fas fa-play-circle"></i></button>
+          <button id="snap" class="btn btn-pink mb-2 d-none">Capture <i class="fas fa-camera"></i></button>
+        </div>
+      </div>
+      <canvas id="canvas" class="d-none mb-2 rounded img-preview"></canvas>
+      <div id="cameraPreview" class="d-none fade-in">
+        <img id="capturedImage" class="img-fluid rounded shadow-lg mb-2" alt="Captured">
+        <div id="cameraResult" class="predict-value"></div>
+      </div>
+      <button id="retake" class="btn btn-outline-secondary mt-2 d-none">Retake</button>
+    </div>
+  </div>
+</section>
+
+
+  <!-- Features and Footer Section -->
+  <footer id="features" class="footer-section pt-5 pb-3">
+    <div class="container text-center">
+      <h2 class="mb-4">Key Features</h2>
+<div class="row g-4 justify-content-center">
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-microscope fa-2x text-pink mb-2"></i>
+    <div>Advanced Diagnostic Model</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-notes-medical fa-2x text-pink mb-2"></i>
+    <div>Medical Report Generation</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-image fa-2x text-pink mb-2"></i>
+    <div>Image-Based Detection</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-user-md fa-2x text-pink mb-2"></i>
+    <div>Doctor Consultation Option</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-laptop-medical fa-2x text-pink mb-2"></i>
+    <div>Telemedicine Support</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-heartbeat fa-2x text-pink mb-2"></i>
+    <div>Health Monitoring</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-file-medical fa-2x text-pink mb-2"></i>
+    <div>Patient History Record</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-procedures fa-2x text-pink mb-2"></i>
+    <div>Risk Assessment</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-briefcase-medical fa-2x text-pink mb-2"></i>
+    <div>Medical Kit Advice</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-dna fa-2x text-pink mb-2"></i>
+    <div>Genetic Insights</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-prescription-bottle-alt fa-2x text-pink mb-2"></i>
+    <div>Medication Guidance</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-calendar-check fa-2x text-pink mb-2"></i>
+    <div>Appointment Scheduling</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-shield-virus fa-2x text-pink mb-2"></i>
+    <div>Preventive Tips</div>
+  </div>
+  <div class="col-md-3 col-sm-6 fade-in">
+    <i class="fas fa-headset fa-2x text-pink mb-2"></i>
+    <div>24/7 Support</div>
+  </div>
+</div>
+
+      <hr class="my-4">
+      <div class="footer-bottom mt-3">
+        <p class="mb-1">&copy; 2025 Breast Cancer Predictor. All rights reserved.</p>
+        <p>
+          <a href="#home" class="footer-link">Home</a> |
+          <a href="#features" class="footer-link">Features</a> |
+          <a href="#contact" class="footer-link">Contact</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  <!-- Bootstrap JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- <script src="script.js"></script> -->
+   <script>
+   // Smooth scroll for navbar links
+document.querySelectorAll('a.nav-link, a.footer-link, a.btn').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const hash = this.getAttribute('href');
+    if (hash && hash.startsWith('#')) {
+      e.preventDefault();
+      document.querySelector(hash).scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// Fade in on scroll
+const fadeEls = document.querySelectorAll('.fade-in');
+const fadeInOnScroll = () => {
+  fadeEls.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 50) el.style.opacity = 1;
+  });
+};
+window.addEventListener('scroll', fadeInOnScroll);
+window.addEventListener('load', fadeInOnScroll);
+
+// Upload Prediction
+const uploadForm = document.getElementById('uploadForm');
+const fileInput = document.getElementById('fileInput');
+const uploadPreview = document.getElementById('uploadPreview');
+const uploadedImage = document.getElementById('uploadedImage');
+const uploadResult = document.getElementById('uploadResult');
+
+uploadForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const file = fileInput.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    uploadedImage.src = URL.createObjectURL(file);
+    uploadPreview.classList.remove('d-none');
+    uploadResult.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Predicting...';
+
+    fetch('/predict-upload', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.prediction) {
+        uploadResult.innerHTML = `<i class="fas fa-diagnoses"></i> <span>${data.prediction}</span>`;
+      } else {
+        uploadResult.innerHTML = `<span class="text-danger">${data.error}</span>`;
+      }
+    })
+    .catch(err => {
+      uploadResult.innerHTML = `<span class="text-danger">Error occurred</span>`;
+      console.error(err);
+    });
+  }
+});
+
+// Camera Prediction
+const video = document.getElementById('video');
+const startBtn = document.getElementById('startCamera');
+const snapBtn = document.getElementById('snap');
+const canvas = document.getElementById('canvas');
+const cameraPreview = document.getElementById('cameraPreview');
+const capturedImage = document.getElementById('capturedImage');
+const cameraResult = document.getElementById('cameraResult');
+const retakeBtn = document.getElementById('retake');
+let cameraStream = null;
+
+// Start camera only on button click
+startBtn.addEventListener('click', () => {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      cameraStream = stream;
+      video.srcObject = stream;
+      video.classList.remove('d-none');
+      snapBtn.classList.remove('d-none');
+      startBtn.classList.add('d-none');
+      video.play();
+    }).catch(() => {
+      document.getElementById('cameraArea').innerHTML = '<p class="text-danger">Camera access denied or not available.</p>';
+    });
+  }
+});
+
+snapBtn.addEventListener('click', function () {
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataURL = canvas.toDataURL('image/png');
+
+  capturedImage.src = dataURL;
+  cameraPreview.classList.remove('d-none');
+  canvas.classList.add('d-none');
+  video.classList.add('d-none');
+  snapBtn.classList.add('d-none');
+  retakeBtn.classList.remove('d-none');
+  cameraResult.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Predicting...';
+
+  fetch('/predict-camera', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ image: dataURL })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.prediction) {
+      cameraResult.innerHTML = `<i class="fas fa-diagnoses"></i> <span>${data.prediction}</span>`;
+    } else {
+      cameraResult.innerHTML = `<span class="text-danger">${data.error}</span>`;
+    }
+  })
+  .catch(err => {
+    cameraResult.innerHTML = `<span class="text-danger">Error occurred</span>`;
+    console.error(err);
+  });
+});
+
+retakeBtn.addEventListener('click', function () {
+  cameraPreview.classList.add('d-none');
+  video.classList.remove('d-none');
+  snapBtn.classList.remove('d-none');
+  retakeBtn.classList.add('d-none');
+});
+
+// Optional: Stop camera when leaving the page
+window.addEventListener('beforeunload', () => {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+  }
+});
+
+
+   </script>
+</body>
+</html>
